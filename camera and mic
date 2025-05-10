@@ -1,0 +1,77 @@
+# take a picture every #define pic_time = 3 seconds, send it to AI API (Gemini or ChatGPT any free version you know if theres any) and ask it to analyze if the person is on the phone or doesn't sit correctly
+#create 
+
+
+hold_dict {
+  writing_tool, #Pen, pencil, appel pencil, tablet pencil, calipers, ruler
+  keyboard_or_mouse, #using keyboard and/ or mouse
+  something_to_drink, #glass, cup, bottle 
+  something_to_eat , #fruit, sandwich, holding fork or knife while having a plate, 
+  phone, 
+  Nothing,
+  None of the above
+  }
+  
+look_dict {
+  PC, #monitor_screen or laptop
+  Tablet, # ipad_or_tablet
+  phone,
+  wall,
+  window,
+  book,
+  folder,
+  furnitures,
+  picture, #picture on the wall
+  pet, #dog or cat or any animal
+  None of the above
+  }
+  
+struct picture_response
+{
+  bool is_person; # true if no person present
+  bool is_focus;  #true if the person is focused
+  hold_dict hold_item;
+  looks_dict looks_item;
+  time current_time;
+}
+
+struct status
+{
+  int sensitivity_level; # 0 low, 1 - moderate, 2- high
+  bool silent_mode; #don't speak
+}
+
+struct voice_response
+{
+  bool direct_call; # contains "Hello duck", assume if the person tried to say hello duck
+  bool change_sensetivity_level; # false not change, true change
+  int sensitivity_level; # -1 not relevant, 0 low, 1 - moderate, 2- high
+  bool change_silent_mode; # false not change, true change
+  int silent_mode; # -1 not relevent, 0 silent mode off, 1 silent mode on
+  String freindly_response; #output from model
+}
+struct request
+{
+  picture pic; # always contains a picture
+  String speech_to_text; # may contains text or Null
+}
+struct response
+{
+  struct picture_response pic_res;
+  struct voice_response voice_res;
+}
+main {
+  struck request current_request;
+  
+  pthread that take a photo every 3 seconds and update current_request
+  pthread that always speach to text and whenever detect a speech need update current_request
+
+  every 3 sec:
+    send struct request to API
+    reset struct request to Nan
+    recieve API response
+  
+  
+  
+}
+
