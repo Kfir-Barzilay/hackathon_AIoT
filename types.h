@@ -1,9 +1,9 @@
 // File: types.h
 #pragma once
 
-#include <opencv2/opencv.hpp>  // For cv::Mat and camera capture
 #include <string>
 #include <chrono>
+#include <opencv2/opencv.hpp>  // For cv::Mat and camera capture
 
 // Enumerations for items held and objects looked at
 enum class HoldItem {
@@ -43,7 +43,7 @@ struct VoiceResponse {
 
 // Combined request structure
 struct Request {
-    cv::Mat pic;               // Latest captured frame
+    cv::Mat pic;               // Captured frame
     std::string speechToText;  // Transcribed speech, if any
 };
 
