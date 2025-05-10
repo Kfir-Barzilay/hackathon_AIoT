@@ -5,45 +5,59 @@
 #include <atomic>
 #include <iostream>
 #include <chrono>
+#include <opencv2/opencv.hpp>
 
 // Shared state
-Request currentRequest;
 std::mutex requestMutex;
 std::atomic<bool> running{true};
+std::string sharedSpeechText;
 
 // Thread declarations
-void cameraThread(int picIntervalSec);
 void speechThread();
 Response sendRequestToApi(const Request& req);
 
 int main() {
     const int picIntervalSec = 3;
 
-    // Start sensor threads
-    std::thread cam(cameraThread, picIntervalSec);
+    // Open camera once
+    cv::VideoCapture cap(0);
+    if (!cap.isOpened()) {
+        std::cerr << "[Camera] Cannot open camera" << std::endl;
+        return -1;
+    }
+
+    // Start speech thread
     std::thread speech(speechThread);
 
-    // Main loop: batch and send requests every picIntervalSec
     while (running) {
+        // Wait interval
         std::this_thread::sleep_for(std::chrono::seconds(picIntervalSec));
 
-        Request reqCopy;
+        // Capture frame just before sending
+        cv::Mat frame;
+        cap >> frame;
+        if (frame.empty()) continue;
+
+        // Prepare request
+        Request req;
+        req.pic = frame;
         {
             std::lock_guard<std::mutex> lock(requestMutex);
-            reqCopy = currentRequest;
-            currentRequest = Request{}; // reset
+            req.speechToText = sharedSpeechText;
+            sharedSpeechText.clear();  // reset after consuming
         }
 
-        Response resp = sendRequestToApi(reqCopy);
+        // Send to AI API
+        Response resp = sendRequestToApi(req);
+
         // Handle AI response
         if (resp.voiceRes.directCall) {
             std::cout << "AI: " << resp.voiceRes.friendlyResponse << std::endl;
         }
-        // Adjust status based on resp.voiceRes if needed
+        // TODO: adjust status or take actions based on resp
     }
 
     // Cleanup
-    cam.join();
     speech.join();
     return 0;
 }
