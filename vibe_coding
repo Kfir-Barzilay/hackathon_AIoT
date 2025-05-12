@@ -7,7 +7,10 @@ hold_dict {
   keyboard_or_mouse, #using keyboard and/ or mouse
   something_to_drink, #glass, cup, bottle 
   something_to_eat , #fruit, sandwich, holding fork or knife while having a plate, 
-  phone, 
+  something_to_write_on, #paper, notebook, 
+  phone,
+  Not_phone_electronic_device, #ipad, tablet, laptop
+  calculator,
   Nothing,
   None of the above
   }
